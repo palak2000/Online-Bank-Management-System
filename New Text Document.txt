@@ -1,0 +1,137 @@
+package com.company;
+import java.util.Scanner;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.sql.*;
+import static java.lang.System.exit;
+import static javax.swing.text.html.HTML.Tag.SELECT;
+class frame11{
+        static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+        static final String DB_URL = "jdbc:mysql://localhost/palak";
+        Connection conn = null;
+        Statement stmt = null;
+        int j,l;
+         public void createaccount() {
+            try {
+                long i=1;
+                Class.forName(JDBC_DRIVER);
+                conn = DriverManager.getConnection(DB_URL, "naman", "naman@123");
+                stmt = conn.createStatement();
+                String sql = "CREATE TABLE bank16(accountno int NOT NULL AUTO_INCREMENT,name varchar(20),address varchar(30),phone varchar(10),pin varchar(15),initial_amount varchar(100),PRIMARY KEY(accountno))";
+                stmt.executeUpdate(sql);
+                System.out.println("for creating your account");
+                Scanner sc =new Scanner(System.in);
+                    int initial_amount=500;
+                    int account_no2=0;
+                    System.out.print("enter your name=");
+                    String name=sc.nextLine();
+                    System.out.print("enter your address=");
+                    String address=sc.nextLine();
+                    System.out.print("enter your phone/mobile no:=");
+                    String mob=sc.nextLine();
+                    if(mob.length()!=10){
+                        System.out.print("your mobile no is wrong please enter 10 digit mobile no: and start again");
+                        exit(0);
+                    }
+                    System.out.print("set your pin/password=");
+                    int pin=sc.nextInt();
+                    String sql2 = "INSERT INTO `bank16`(`accountno`, `name`, `address`, `phone`, `pin`, `initial_amount`) VALUES (null,'"+name+"','"+address+"','"+mob+"','"+pin+"','"+initial_amount+"')";
+                    stmt.executeUpdate(sql2);
+                    String sq122 = "SELECT accountno,initial_amount FROM bank16";
+                    ResultSet rs = stmt.executeQuery(sq122);
+                    while(rs.next()){
+                         account_no2 = rs.getInt("accountno");
+                    }
+                        System.out.println("your account is created with");
+                        System.out.println("your account no: =" + account_no2);
+                        System.out.println("your initial amount =" + initial_amount);
+                    rs.close();
+                stmt.close();
+                conn.close();
+            } catch (Exception a) {
+                System.out.println(a);
+            }
+        }
+            public void add_amount(){
+                try {
+                    Class.forName(JDBC_DRIVER);
+                    conn = DriverManager.getConnection(DB_URL, "naman", "naman@123");
+                    stmt = conn.createStatement();
+                    System.out.println("for crediting and withdrawing money");
+                    Scanner sc = new Scanner(System.in);
+                    System.out.print("enter your account no:=");
+                    int account = sc.nextInt();
+                    System.out.print("enter your password=");
+                    int password = sc.nextInt();
+                    String sq19 = "SELECT accountno,pin,initial_amount FROM bank16";
+                    ResultSet rs = stmt.executeQuery(sq19);
+                    while(rs.next()) {
+                        int accountno1 = rs.getInt("accountno");
+                        int pin1 = rs.getInt("pin");
+                        int initial_amount1 = rs.getInt("initial_amount");
+                        if (accountno1 == account && pin1 == password) {
+                            l = 1;
+                        } else {
+                            l = 0;
+                        }
+                        if (l == 1) {
+                            System.out.print("for crediting amount-1,for withdrawimg-0");
+                            int ch = sc.nextInt();
+                            System.out.print("enter amount you want to credit or withdraw=");
+                            int new_amount = sc.nextInt();
+                            switch (ch) {
+                                case 1:
+                                    new_amount = initial_amount1 + new_amount;
+                                    String sql20 = "UPDATE bank16 SET initial_amount = '" + new_amount + "' WHERE accountno = '" + account + "'";
+                                    stmt.executeUpdate(sql20);
+                                    System.out.println("your balance amount is" + new_amount);
+                                    break;
+                                case 0:
+                                    new_amount = initial_amount1 - new_amount;
+                                    if (new_amount < 0) break;
+                                    String sql21 = "UPDATE bank16 SET initial_amount = '" + new_amount + "' WHERE accountno = '" + account + "'";
+                                    stmt.executeUpdate(sql21);
+                                    System.out.println("your balance amount is" + new_amount);
+                                    break;
+                                default:
+                                    System.out.println("no result ");
+                            }
+                            break;
+                        }
+                    }
+                        if(l==0){
+                            System.out.println("you account details are wrong");
+                        }
+
+                    rs.close();
+                    stmt.close();
+                    conn.close();
+                }catch (Exception a) {
+                    System.out.println(a);
+                }
+            }
+        }
+
+
+public class frame1 {
+    public static void main(String args[]) {
+        frame11 fm = new frame11();
+        while(true){
+        System.out.println("for creating account press 0 , for accounting press 1,to exit press 3");
+        Scanner sc=new Scanner(System.in);
+        int fg=sc.nextInt();
+        switch(fg) {
+            case 0:
+                fm.createaccount();
+                break;
+            case 1:
+                fm.add_amount();
+                break;
+            default:
+                System.out.println("you are exited from here");
+                exit(0);
+        }
+        }
+    }
+}
